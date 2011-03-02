@@ -4,6 +4,9 @@ hwp_thumbnailer_SOURCES = hwp-thumbnailer.c
 hwp_thumbnailer_CFLAGS = $(THUMBNAILER_CFLAGS)
 hwp_thumbnailer_LDADD = $(THUMBNAILER_LIBS)
 
+thumbnailerdir = $(datadir)/thumbnailers
+thumbnailer_DATA = hwp-thumbnailer.thumbnailer
+
 schemadir = $(GCONF_SCHEMA_FILE_DIR)
 schema_DATA = hwp-thumbnailer.schemas
 
@@ -15,4 +18,5 @@ install-data-local:
 	fi
 
 EXTRA_DIST =         	\
+	$(thumbnailer_DATA) \
 	$(schema_DATA)
