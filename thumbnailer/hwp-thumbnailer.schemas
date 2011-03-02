@@ -1,0 +1,18 @@
+<gconfschemafile>
+<schemalist>
+ <schema>
+  <key>/schemas/desktop/gnome/thumbnailers/application@x-hwp/enable</key>
+  <applyto>/desktop/gnome/thumbnailers/application@x-hwp/enable</applyto>
+  <owner>hwp-thumbnailer</owner>
+  <type>bool</type>
+  <default>true</default>
+ </schema>
+ <schema>
+  <key>/schemas/desktop/gnome/thumbnailers/application@x-hwp/command</key>
+  <applyto>/desktop/gnome/thumbnailers/application@x-hwp/command</applyto>
+  <owner>hwp-thumbnailer</owner>
+  <type>string</type>
+  <default>hwp-thumbnailer -s %s %i %o</default>
+ </schema>
+</schemalist>
+</gconfschemafile>
