@@ -6,6 +6,10 @@
   <owner>hwp-thumbnailer</owner>
   <type>bool</type>
   <default>true</default>
+  <locale name="C">
+    <short></short>
+    <long></long>
+  </locale>
  </schema>
  <schema>
   <key>/schemas/desktop/gnome/thumbnailers/application@x-hwp/command</key>
@@ -13,6 +17,10 @@
   <owner>hwp-thumbnailer</owner>
   <type>string</type>
   <default>hwp-thumbnailer -s %s %i %o</default>
+  <locale name="C">
+    <short></short>
+    <long></long>
+  </locale>
  </schema>
 </schemalist>
 </gconfschemafile>
