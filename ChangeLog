@@ -1,0 +1,55 @@
+commit 830348dcad93318940482d019cbd83c9dbf2eaca
+Author: Changwoo Ryu <cwryu@debian.org>
+Date:   Tue May 22 01:25:29 2012 +0900
+
+    Remove obsolete gconf schemas
+
+ configure.ac                        |    5 -----
+ thumbnailer/Makefile.am             |   13 +------------
+ thumbnailer/hwp-thumbnailer.schemas |   26 --------------------------
+ 3 files changed, 1 insertion(+), 43 deletions(-)
+
+commit fea0a2f9d19fac119d4adc280b7b635c7b32b86a
+Author: Changwoo Ryu <cwryu@debian.org>
+Date:   Sat Mar 12 01:25:39 2011 +0900
+
+    Insert empty <locale> tags to prevent gconftool error
+
+ thumbnailer/hwp-thumbnailer.schemas |    8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+commit 0b73e8d22a84f692fa07cd9f4c40d09423ea75f7
+Author: Changwoo Ryu <cwryu@debian.org>
+Date:   Sat Mar 12 01:25:10 2011 +0900
+
+    Fix GConf schema path
+
+ thumbnailer/Makefile.am |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+commit 3a5a4ff2c36e1d525ca2990f8fb573d94f7cc240
+Author: Changwoo Ryu <cwryu@debian.org>
+Date:   Thu Mar 3 03:22:33 2011 +0900
+
+    Thumbnailer entry for GNOME 3
+
+ thumbnailer/Makefile.am                 |    4 ++++
+ thumbnailer/hwp-thumbnailer.thumbnailer |    4 ++++
+ 2 files changed, 8 insertions(+)
+
+commit 39d0467f88bc31ce781f289e187605a972da239a
+Author: Changwoo Ryu <cwryu@debian.org>
+Date:   Wed Mar 2 11:42:42 2011 +0900
+
+    Initial version
+
+ .gitignore                          |   28 +++++++++
+ AUTHORS                             |    1 +
+ Makefile.am                         |    1 +
+ README                              |    9 +++
+ autogen.sh                          |   21 +++++++
+ configure.ac                        |   32 +++++++++++
+ thumbnailer/Makefile.am             |   18 ++++++
+ thumbnailer/hwp-thumbnailer.c       |  106 +++++++++++++++++++++++++++++++++++
+ thumbnailer/hwp-thumbnailer.schemas |   18 ++++++
+ 9 files changed, 234 insertions(+)

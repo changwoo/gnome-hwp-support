@@ -1,4 +1,4 @@
-AC_INIT([gnome-hwp-support], [0.1.1], [cwryu@debian.org], [gnome-hwp-support])
+AC_INIT([gnome-hwp-support], [0.1.2], [cwryu@debian.org], [gnome-hwp-support])
 AC_CONFIG_SRCDIR([README])
 AC_CONFIG_HEADERS(config.h)
 AM_INIT_AUTOMAKE([1.11 no-dist-gzip dist-xz tar-ustar foreign])
