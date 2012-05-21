@@ -20,11 +20,6 @@ AC_SUBST(THUMBNAILER_LIBS)
 # AC_SUBST([nautilusextensiondir],[$NAUTILUS_EXTENSION_DIR])
 # AC_SUBST(nautilus_CFLAGS)
 # AC_SUBST(nautilus_LIBS)
-# 
-
-# required to install GConf schemas 
-AM_GCONF_SOURCE_2
-AC_PATH_PROG([GCONFTOOL], [gconftool-2], [false])
 
 AC_CONFIG_FILES([Makefile
 		 thumbnailer/Makefile])
