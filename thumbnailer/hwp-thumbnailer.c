@@ -97,7 +97,7 @@ main(int argc, char *argv[])
 		}
 	}
 
-	gdk_pixbuf_save(pixbuf, outfilename, "png", NULL, 0);
+	gdk_pixbuf_save(pixbuf, outfilename, "png", NULL, NULL);
 	g_object_unref(pixbuf);
 
 	gsf_shutdown();

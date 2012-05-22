@@ -1,15 +1,19 @@
-AC_INIT([gnome-hwp-support], [0.1.2], [cwryu@debian.org], [gnome-hwp-support])
-AC_CONFIG_SRCDIR([README])
-AC_CONFIG_HEADERS(config.h)
-AM_INIT_AUTOMAKE([1.11 no-dist-gzip dist-xz tar-ustar foreign])
+AC_PREREQ(2.63)
+AC_INIT([gnome-hwp-support], [0.1.2], [https://github.com/changwoo/gnome-hwp-support/issues], [gnome-hwp-support])
+
+AC_CONFIG_SRCDIR([thumbnailer])
+AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 
-AM_PROG_LIBTOOL
-AC_ISC_POSIX
+AM_INIT_AUTOMAKE([1.11 dist-xz no-dist-gzip tar-ustar foreign])
+AM_MAINTAINER_MODE([enable])
+AM_SILENT_RULES([yes])
+
 AC_PROG_CC
-AM_PROG_CC_STDC
 AM_PROG_CC_C_O
-AC_STDC_HEADERS
+AC_HEADER_STDC
+
+GNOME_COMPILE_WARNINGS([maximum])
 
 PKG_CHECK_MODULES([THUMBNAILER],[libgsf-1 gdk-pixbuf-2.0])
 AC_SUBST(THUMBNAILER_CFLAGS)
