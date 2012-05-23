@@ -10,3 +10,5 @@ thumbnailerdir = $(datadir)/thumbnailers
 thumbnailer_DATA = hwp-thumbnailer.thumbnailer
 
 EXTRA_DIST = $(thumbnailer_DATA)
+
+-include $(top_srcdir)/git.mk
