@@ -1,4 +1,8 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8; c-indent-level: 8 -*- */
+/* Copyright (C) 2012 Changwoo Ryu <cwryu@debian.org
+ *
+ * Based on Evince properties/ev-properties-view.c:
+ */
 /* this file is part of evince, a gnome document viewer
  *
  *  Copyright (C) 2005 Red Hat, Inc
@@ -221,6 +225,7 @@ hwp_properties_view_set_info (HwpPropertiesView *properties, const GsfDocMetaDat
 	} meta_prop [] = {
 		{ GSF_META_NAME_CREATOR, CREATOR_PROPERTY },
 		{ GSF_META_NAME_DATE_MODIFIED, MOD_DATE_PROPERTY },
+		{ GSF_META_NAME_DATE_CREATED, CREATION_DATE_PROPERTY },
 		{ GSF_META_NAME_TITLE, TITLE_PROPERTY },
 		/* { GSF_META_NAME_DESCRIPTION, TITLE_PROPERTY },*/
 		{ GSF_META_NAME_KEYWORDS, KEYWORDS_PROPERTY },

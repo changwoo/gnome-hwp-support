@@ -33,6 +33,7 @@ PKG_CHECK_MODULES([PROPERTIES],[libnautilus-extension libgsf-1 gnome-vfs-2.0])
 NAUTILUS_EXTENSION_DIR=`$PKG_CONFIG --variable=extensiondir libnautilus-extension`
 AC_SUBST(PROPERTIES_CFLAGS)
 AC_SUBST(PROPERTIES_LIBS)
+AC_SUBST(NAUTILUS_EXTENSION_DIR)
 
 AM_CONDITIONAL([ENABLE_NAUTILUS],[test "$enable_nautilus" = "yes"])
 

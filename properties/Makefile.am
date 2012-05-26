@@ -14,7 +14,7 @@ libhwpproperties_la_SOURCES=			\
 	hwp-properties-view.c			\
 	hwp-properties-view.h
 
-nautilusextensiondir=$(libdir)/$(NAUTILUS_EXTENSION_DIR)
+nautilusextensiondir=$(NAUTILUS_EXTENSION_DIR)
 nautilusextension_LTLIBRARIES = libhwp-properties-page.la
 
 libhwp_properties_page_la_CFLAGS = -I$(top_srcdir)

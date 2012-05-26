@@ -1,3 +1,7 @@
+/* Copyright (C) 2012 Changwoo Ryu <cwryu@debian.org
+ *
+ * Based on Evince properties/ev-properties-main.c:
+ */
 /*
  * Copyright (C) 2000, 2001 Eazel Inc.
  * Copyright (C) 2003  Andrew Sobala <aes@gnome.org>
@@ -108,12 +112,12 @@ hwp_properties_get_pages (NautilusPropertyPageProvider *provider,
 	if (!meta_data)
 		goto end;
 
-	label = gtk_label_new (_("Document"));
+	label = gtk_label_new (_("HWP Document"));
 	page = hwp_properties_view_new (uri);
 	hwp_properties_view_set_info (HWP_PROPERTIES_VIEW (page),
 				      meta_data);
 	gtk_widget_show (page);
-	property_page = nautilus_property_page_new ("document-properties",
+	property_page = nautilus_property_page_new ("hwp-document-properties",
 			label, page);
 	g_object_unref (meta_data);
 
