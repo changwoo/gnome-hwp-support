@@ -31,7 +31,9 @@
 #include <glib/gi18n-lib.h>
 #include <gtk/gtk.h>
 
-#include "ev-properties-view.h"
+#include "hwp-properties-view.h"
+
+#include <gsf/gsf-meta-names.h>
 
 typedef enum {
 	TITLE_PROPERTY,
@@ -73,7 +75,7 @@ static const PropertyInfo properties_info[] = {
 	{ PAPER_SIZE_PROPERTY,    N_("Paper Size:") }
 };
 
-struct _EvPropertiesView {
+struct _HwpPropertiesView {
 	GtkVBox base_instance;
 
 	GtkWidget *grid;
@@ -81,31 +83,31 @@ struct _EvPropertiesView {
 	gchar     *uri;
 };
 
-struct _EvPropertiesViewClass {
+struct _HwpPropertiesViewClass {
 	GtkVBoxClass base_class;
 };
 
-G_DEFINE_TYPE (EvPropertiesView, ev_properties_view, GTK_TYPE_VBOX)
+G_DEFINE_TYPE (HwpPropertiesView, hwp_properties_view, GTK_TYPE_VBOX)
 
 static void
-ev_properties_view_dispose (GObject *object)
+hwp_properties_view_dispose (GObject *object)
 {
-	EvPropertiesView *properties = EV_PROPERTIES_VIEW (object);
+	HwpPropertiesView *properties = HWP_PROPERTIES_VIEW (object);
 	
 	if (properties->uri) {
 		g_free (properties->uri);
 		properties->uri = NULL;
 	}
 	
-	G_OBJECT_CLASS (ev_properties_view_parent_class)->dispose (object);
+	G_OBJECT_CLASS (hwp_properties_view_parent_class)->dispose (object);
 }
 
 static void
-ev_properties_view_class_init (EvPropertiesViewClass *properties_class)
+hwp_properties_view_class_init (HwpPropertiesViewClass *properties_class)
 {
 	GObjectClass *g_object_class = G_OBJECT_CLASS (properties_class);
 
-	g_object_class->dispose = ev_properties_view_dispose;
+	g_object_class->dispose = hwp_properties_view_dispose;
 }
 
 /* This is cut out of gconvert.c from glib (and mildly modified).  Not all
@@ -149,7 +151,7 @@ make_valid_utf8 (const gchar *name)
 }
 
 static void
-set_property (EvPropertiesView *properties,
+set_property (HwpPropertiesView *properties,
 	      GtkGrid          *grid,
 	      Property          property,
 	      const gchar      *text,
@@ -203,120 +205,28 @@ set_property (EvPropertiesView *properties,
 	*row += 1;
 }
 
-static GtkUnit
-get_default_user_units (void)
-{
-	/* Translate to the default units to use for presenting
-	 * lengths to the user. Translate to default:inch if you
-	 * want inches, otherwise translate to default:mm.
-	 * Do *not* translate it to "predefinito:mm", if it
-	 * it isn't default:mm or default:inch it will not work
-	 */
-	gchar *e = _("default:mm");
-
-#ifdef HAVE__NL_MEASUREMENT_MEASUREMENT
-	gchar *imperial = NULL;
-	
-	imperial = nl_langinfo (_NL_MEASUREMENT_MEASUREMENT);
-	if (imperial && imperial[0] == 2)
-		return GTK_UNIT_INCH;  /* imperial */
-	if (imperial && imperial[0] == 1)
-		return GTK_UNIT_MM;  /* metric */
-#endif
-
-	if (strcmp (e, "default:mm") == 0)
-		return GTK_UNIT_MM;
-	if (strcmp (e, "default:inch") == 0)
-		return GTK_UNIT_INCH;
-	
-	g_warning ("Whoever translated default:mm did so wrongly.\n");
-				
-	return GTK_UNIT_MM;
-}
-
-static gdouble
-get_tolerance (gdouble size)
-{
-	if (size < 150.0f)
-		return 1.5f;
-	else if (size >= 150.0f && size <= 600.0f)
-		return 2.0f;
-	else
-		return 3.0f;
-}
-
-static char *
-ev_regular_paper_size (const EvDocumentInfo *info)
-{
-	GList *paper_sizes, *l;
-	gchar *exact_size;
-	gchar *str = NULL;
-	GtkUnit units;
-
-	units = get_default_user_units ();
-
-	if (units == GTK_UNIT_MM) {
-		exact_size = g_strdup_printf(_("%.0f × %.0f mm"),
-					     info->paper_width,
-					     info->paper_height);
-	} else {
-		exact_size = g_strdup_printf (_("%.2f × %.2f inch"),
-					      info->paper_width  / 25.4f,
-					      info->paper_height / 25.4f);
-	}
-
-	paper_sizes = gtk_paper_size_get_paper_sizes (FALSE);
-	
-	for (l = paper_sizes; l && l->data; l = g_list_next (l)) {
-		GtkPaperSize *size = (GtkPaperSize *) l->data;
-		gdouble paper_width;
-		gdouble paper_height;
-		gdouble width_tolerance;
-		gdouble height_tolerance;
-
-		paper_width = gtk_paper_size_get_width (size, GTK_UNIT_MM);
-		paper_height = gtk_paper_size_get_height (size, GTK_UNIT_MM);
-
-		width_tolerance = get_tolerance (paper_width);
-		height_tolerance = get_tolerance (paper_height);
-
-		if (ABS (info->paper_height - paper_height) <= height_tolerance &&
-		    ABS (info->paper_width  - paper_width) <= width_tolerance) {
-			/* Note to translators: first placeholder is the paper name (eg.
-			 * A4), second placeholder is the paper size (eg. 297x210 mm) */
-			str = g_strdup_printf (_("%s, Portrait (%s)"),
-					       gtk_paper_size_get_display_name (size),
-					       exact_size);
-		} else if (ABS (info->paper_width  - paper_height) <= height_tolerance &&
-			   ABS (info->paper_height - paper_width) <= width_tolerance) {
-			/* Note to translators: first placeholder is the paper name (eg.
-			 * A4), second placeholder is the paper size (eg. 297x210 mm) */
-			str = g_strdup_printf ( _("%s, Landscape (%s)"),
-						gtk_paper_size_get_display_name (size),
-						exact_size);
-		}
-	}
-
-	g_list_foreach (paper_sizes, (GFunc) gtk_paper_size_free, NULL);
-	g_list_free (paper_sizes);
-
-	if (str != NULL) {
-		g_free (exact_size);
-		return str;
-	}
-	
-	return exact_size;
-}
-
 void
-ev_properties_view_set_info (EvPropertiesView *properties, const EvDocumentInfo *info)
+hwp_properties_view_set_info (HwpPropertiesView *properties, const GsfDocMetaData *meta_data)
 {
 	GtkWidget *grid;
 	gchar     *text;
 	gint       row = 0;
 
+	GsfDocProp *prop;
+	const GValue *value;
+	char *tmp;
+	
+
 	grid = properties->grid;
 
+	prop = gsf_doc_meta_data_lookup (meta_data, GSF_META_NAME_TITLE);
+	if (prop) {
+		value = gsf_doc_prop_get_val(prop);
+		tmp = g_value_get_string (value);
+		set_property (properties, GTK_GRID (grid), TITLE_PROPERTY, tmp, &row);
+	}
+
+	/*
 	if (info->fields_mask & EV_DOCUMENT_INFO_TITLE) {
 		set_property (properties, GTK_GRID (grid), TITLE_PROPERTY, info->title, &row);
 	}
@@ -337,12 +247,12 @@ ev_properties_view_set_info (EvPropertiesView *properties, const EvDocumentInfo 
 		set_property (properties, GTK_GRID (grid), CREATOR_PROPERTY, info->creator, &row);
 	}
 	if (info->fields_mask & EV_DOCUMENT_INFO_CREATION_DATE) {
-		text = ev_document_misc_format_date (info->creation_date);
+		text = hwp_document_misc_format_date (info->creation_date);
 		set_property (properties, GTK_GRID (grid), CREATION_DATE_PROPERTY, text, &row);
 		g_free (text);
 	}
 	if (info->fields_mask & EV_DOCUMENT_INFO_MOD_DATE) {
-		text = ev_document_misc_format_date (info->modified_date);
+		text = hwp_document_misc_format_date (info->modified_date);
 		set_property (properties, GTK_GRID (grid), MOD_DATE_PROPERTY, text, &row);
 		g_free (text);
 	}
@@ -361,14 +271,15 @@ ev_properties_view_set_info (EvPropertiesView *properties, const EvDocumentInfo 
 		set_property (properties, GTK_GRID (grid), SECURITY_PROPERTY, info->security, &row);
 	}
 	if (info->fields_mask & EV_DOCUMENT_INFO_PAPER_SIZE) {
-		text = ev_regular_paper_size (info);
+		text = hwp_regular_paper_size (info);
 		set_property (properties, GTK_GRID (grid), PAPER_SIZE_PROPERTY, text, &row);
 		g_free (text);
 	}
+	*/
 }
 
 static void
-ev_properties_view_init (EvPropertiesView *properties)
+hwp_properties_view_init (HwpPropertiesView *properties)
 {
 	properties->grid = gtk_grid_new ();
 	gtk_grid_set_column_spacing (GTK_GRID (properties->grid), 12);
@@ -379,17 +290,17 @@ ev_properties_view_init (EvPropertiesView *properties)
 }
 
 void
-ev_properties_view_register_type (GTypeModule *module)
+hwp_properties_view_register_type (GTypeModule *module)
 {
-	ev_properties_view_get_type ();
+	hwp_properties_view_get_type ();
 }
 
 GtkWidget *
-ev_properties_view_new (const gchar *uri)
+hwp_properties_view_new (const gchar *uri)
 {
-	EvPropertiesView *properties;
+	HwpPropertiesView *properties;
 
-	properties = g_object_new (EV_TYPE_PROPERTIES, NULL);
+	properties = g_object_new (HWP_TYPE_PROPERTIES, NULL);
 	properties->uri = g_strdup (uri);
 
 	return GTK_WIDGET (properties);

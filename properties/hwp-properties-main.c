@@ -37,17 +37,18 @@
 #include <libnautilus-extension/nautilus-extension-types.h>
 #include <libnautilus-extension/nautilus-property-page-provider.h>
 
-#include <evince-document.h>
-#include "ev-properties-view.h"
+#include <gsf/gsf-utils.h>
+#include "props-data.h"
+#include "hwp-properties-view.h"
 
 static GType epp_type = 0;
 static void property_page_provider_iface_init
 	(NautilusPropertyPageProviderIface *iface);
-static GList *ev_properties_get_pages
+static GList *hwp_properties_get_pages
 	(NautilusPropertyPageProvider *provider, GList *files);
 
 static void
-ev_properties_plugin_register_type (GTypeModule *module)
+hwp_properties_plugin_register_type (GTypeModule *module)
 {
 	const GTypeInfo info = {
 		sizeof (GObjectClass),
@@ -67,7 +68,7 @@ ev_properties_plugin_register_type (GTypeModule *module)
 	};
 
 	epp_type = g_type_module_register_type (module, G_TYPE_OBJECT,
-			"EvPropertiesPlugin",
+			"HwpPropertiesPlugin",
 			&info, 0);
 	g_type_module_add_interface (module,
 			epp_type,
@@ -78,15 +79,15 @@ ev_properties_plugin_register_type (GTypeModule *module)
 static void
 property_page_provider_iface_init (NautilusPropertyPageProviderIface *iface)
 {
-	iface->get_pages = ev_properties_get_pages;
+	iface->get_pages = hwp_properties_get_pages;
 }
 
 static GList *
-ev_properties_get_pages (NautilusPropertyPageProvider *provider,
+hwp_properties_get_pages (NautilusPropertyPageProvider *provider,
 			 GList *files)
 {
 	GError *error = NULL;
-	EvDocument *document;
+	GsfDocMetaData *meta_data;
 	GList *pages = NULL;
 	NautilusFileInfo *file;
 	gchar *uri = NULL;
@@ -103,24 +104,18 @@ ev_properties_get_pages (NautilusPropertyPageProvider *provider,
 	uri = nautilus_file_info_get_uri (file);
 	mime_type = nautilus_file_info_get_mime_type (file);
 	
-	document = ev_backends_manager_get_document (mime_type);
-	if (!document)
+	meta_data = props_data_read (uri, &error);
+	if (!meta_data)
 		goto end;
 
-	ev_document_load (document, uri, &error);
-	if (error) {
-		g_error_free (error);
-		goto end;
-	}
-	
 	label = gtk_label_new (_("Document"));
-	page = ev_properties_view_new (uri);
-	ev_properties_view_set_info (EV_PROPERTIES_VIEW (page),
-				     ev_document_get_info (document));
+	page = hwp_properties_view_new (uri);
+	hwp_properties_view_set_info (HWP_PROPERTIES_VIEW (page),
+				      meta_data);
 	gtk_widget_show (page);
 	property_page = nautilus_property_page_new ("document-properties",
 			label, page);
-	g_object_unref (document);
+	g_object_unref (meta_data);
 
 	pages = g_list_prepend (pages, property_page);
 
@@ -135,16 +130,16 @@ end:
 void
 nautilus_module_initialize (GTypeModule *module)
 {
-	ev_properties_plugin_register_type (module);
-	ev_properties_view_register_type (module);
+	hwp_properties_plugin_register_type (module);
+	hwp_properties_view_register_type (module);
 
-        ev_init ();
+	gsf_init();
 }
 
 void
 nautilus_module_shutdown (void)
 {
-        ev_shutdown ();
+	gsf_shutdown();
 }
 
 void

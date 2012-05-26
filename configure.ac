@@ -9,23 +9,36 @@ AM_INIT_AUTOMAKE([1.11 dist-xz no-dist-gzip tar-ustar foreign])
 AM_MAINTAINER_MODE([enable])
 AM_SILENT_RULES([yes])
 
+LT_PREREQ([2.2.6])
+LT_INIT([dlopen disable-static])
+
 AC_PROG_CC
 AM_PROG_CC_C_O
 AC_HEADER_STDC
 
 GNOME_COMPILE_WARNINGS([maximum])
 
+IT_PROG_INTLTOOL([0.35.0])
+
+GETTEXT_PACKAGE=gnome-hwp-support
+AC_SUBST(GETTEXT_PACKAGE)
+AC_DEFINE_UNQUOTED([GETTEXT_PACKAGE],["$GETTEXT_PACKAGE"],[Gettext package])
+AM_GLIB_GNU_GETTEXT
+
 PKG_CHECK_MODULES([THUMBNAILER],[libgsf-1 gdk-pixbuf-2.0])
 AC_SUBST(THUMBNAILER_CFLAGS)
 AC_SUBST(THUMBNAILER_LIBS)
 
-# PKG_CHECK_MODULES([nautilus],[libnautilus-extension libgsf-1])
-# NAUTILUS_EXTENSION_DIR=`$PKG_CONFIG --variable=extensiondir libnautilus-extension`
-# AC_SUBST([nautilusextensiondir],[$NAUTILUS_EXTENSION_DIR])
-# AC_SUBST(nautilus_CFLAGS)
-# AC_SUBST(nautilus_LIBS)
+PKG_CHECK_MODULES([PROPERTIES],[libnautilus-extension libgsf-gnome-1 gnome-vfs-2.0])
+NAUTILUS_EXTENSION_DIR=`$PKG_CONFIG --variable=extensiondir libnautilus-extension`
+AC_SUBST(PROPERTIES_CFLAGS)
+AC_SUBST(PROPERTIES_LIBS)
+
+AM_CONDITIONAL([ENABLE_NAUTILUS],[test "$enable_nautilus" = "yes"])
 
 AC_CONFIG_FILES([Makefile
-		 thumbnailer/Makefile])
+		 thumbnailer/Makefile
+		 properties/Makefile
+		 po/Makefile.in])
 
 AC_OUTPUT

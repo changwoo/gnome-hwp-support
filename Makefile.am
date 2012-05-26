@@ -1,4 +1,4 @@
-SUBDIRS = thumbnailer
+SUBDIRS = thumbnailer properties po
 
 MAINTAINERCLEANFILES = ChangeLog
 
