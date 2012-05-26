@@ -5,7 +5,7 @@
 #include <gsf/gsf-doc-meta-data.h>
 #include <gsf/gsf-infile-msole.h>
 #include <gsf/gsf-infile.h>
-#include <gsf-gnome/gsf-input-gnomevfs.h>
+#include <gsf/gsf-input-gio.h>
 #include <gsf/gsf-input-memory.h>
 #include <gsf/gsf-input-stdio.h>
 #include <gsf/gsf-msole-utils.h>
@@ -14,13 +14,16 @@
 GsfDocMetaData *
 props_data_read(const char *uri, GError **error)
 {
-	gsf_init();
+	GsfInput *input;
+	GsfInfile *infile;
+	GsfInput *summary;
 
-	GsfInput *input = gsf_input_gnomevfs_new(uri, NULL);
-	GsfInfile *infile = gsf_infile_msole_new(input, NULL);
+	input = gsf_input_gio_new_for_uri(uri, error);
+	if (error && *error)
+	  return NULL;
+	infile = gsf_infile_msole_new(input, NULL);
 	g_object_unref(input);
-	GsfInput *summary =
-		gsf_infile_child_by_name(infile, "\005HwpSummaryInformation");
+	summary = gsf_infile_child_by_name(infile, "\005HwpSummaryInformation");
 	g_object_unref(infile);
 
 	int size = gsf_input_size(summary);
