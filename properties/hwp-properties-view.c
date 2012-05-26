@@ -209,73 +209,40 @@ void
 hwp_properties_view_set_info (HwpPropertiesView *properties, const GsfDocMetaData *meta_data)
 {
 	GtkWidget *grid;
-	gchar     *text;
 	gint       row = 0;
 
 	GsfDocProp *prop;
-	const GValue *value;
-	char *tmp;
+	const char *s;
+	int i;
+
+	static const struct {
+		const char *key;
+		Property prop;
+	} meta_prop [] = {
+		{ GSF_META_NAME_CREATOR, CREATOR_PROPERTY },
+		{ GSF_META_NAME_DATE_MODIFIED, MOD_DATE_PROPERTY },
+		{ GSF_META_NAME_TITLE, TITLE_PROPERTY },
+		/* { GSF_META_NAME_DESCRIPTION, TITLE_PROPERTY },*/
+		{ GSF_META_NAME_KEYWORDS, KEYWORDS_PROPERTY },
+		{ GSF_META_NAME_SUBJECT, SUBJECT_PROPERTY },
+		{ GSF_META_NAME_PAGE_COUNT, N_PAGES_PROPERTY },
+	};
 	
 
 	grid = properties->grid;
 
-	prop = gsf_doc_meta_data_lookup (meta_data, GSF_META_NAME_TITLE);
-	if (prop) {
-		value = gsf_doc_prop_get_val(prop);
-		tmp = g_value_get_string (value);
-		set_property (properties, GTK_GRID (grid), TITLE_PROPERTY, tmp, &row);
+	for (i = 0; i < sizeof(meta_prop)/sizeof(meta_prop[0]); i++) {
+		prop = gsf_doc_meta_data_lookup (meta_data, meta_prop[i].key);
+		if (!prop)
+			continue;
+		s = g_value_get_string (gsf_doc_prop_get_val(prop));
+		if (!s || *s == '\0')
+			continue;
+		set_property (properties, GTK_GRID (grid),
+			      meta_prop[i].prop, s, &row);
 	}
 
-	/*
-	if (info->fields_mask & EV_DOCUMENT_INFO_TITLE) {
-		set_property (properties, GTK_GRID (grid), TITLE_PROPERTY, info->title, &row);
-	}
 	set_property (properties, GTK_GRID (grid), URI_PROPERTY, properties->uri, &row);
-	if (info->fields_mask & EV_DOCUMENT_INFO_SUBJECT) {
-		set_property (properties, GTK_GRID (grid), SUBJECT_PROPERTY, info->subject, &row);
-	}
-	if (info->fields_mask & EV_DOCUMENT_INFO_AUTHOR) {
-		set_property (properties, GTK_GRID (grid), AUTHOR_PROPERTY, info->author, &row);
-	}
-	if (info->fields_mask & EV_DOCUMENT_INFO_KEYWORDS) {
-		set_property (properties, GTK_GRID (grid), KEYWORDS_PROPERTY, info->keywords, &row);
-	}
-	if (info->fields_mask & EV_DOCUMENT_INFO_PRODUCER) {
-		set_property (properties, GTK_GRID (grid), PRODUCER_PROPERTY, info->producer, &row);
-	}
-	if (info->fields_mask & EV_DOCUMENT_INFO_CREATOR) {
-		set_property (properties, GTK_GRID (grid), CREATOR_PROPERTY, info->creator, &row);
-	}
-	if (info->fields_mask & EV_DOCUMENT_INFO_CREATION_DATE) {
-		text = hwp_document_misc_format_date (info->creation_date);
-		set_property (properties, GTK_GRID (grid), CREATION_DATE_PROPERTY, text, &row);
-		g_free (text);
-	}
-	if (info->fields_mask & EV_DOCUMENT_INFO_MOD_DATE) {
-		text = hwp_document_misc_format_date (info->modified_date);
-		set_property (properties, GTK_GRID (grid), MOD_DATE_PROPERTY, text, &row);
-		g_free (text);
-	}
-	if (info->fields_mask & EV_DOCUMENT_INFO_FORMAT) {
-		set_property (properties, GTK_GRID (grid), FORMAT_PROPERTY, info->format, &row);
-	}
-	if (info->fields_mask & EV_DOCUMENT_INFO_N_PAGES) {
-		text = g_strdup_printf ("%d", info->n_pages);
-		set_property (properties, GTK_GRID (grid), N_PAGES_PROPERTY, text, &row);
-		g_free (text);
-	}
-	if (info->fields_mask & EV_DOCUMENT_INFO_LINEARIZED) {
-		set_property (properties, GTK_GRID (grid), LINEARIZED_PROPERTY, info->linearized, &row);
-	}
-	if (info->fields_mask & EV_DOCUMENT_INFO_SECURITY) {
-		set_property (properties, GTK_GRID (grid), SECURITY_PROPERTY, info->security, &row);
-	}
-	if (info->fields_mask & EV_DOCUMENT_INFO_PAPER_SIZE) {
-		text = hwp_regular_paper_size (info);
-		set_property (properties, GTK_GRID (grid), PAPER_SIZE_PROPERTY, text, &row);
-		g_free (text);
-	}
-	*/
 }
 
 static void
