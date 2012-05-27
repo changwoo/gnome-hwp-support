@@ -107,6 +107,8 @@ hwp_properties_get_pages (NautilusPropertyPageProvider *provider,
 	/* okay, make the page */
 	uri = nautilus_file_info_get_uri (file);
 	mime_type = nautilus_file_info_get_mime_type (file);
+	if (strcmp(mime_type, "application/x-hwp") != 0)
+		goto end;
 	
 	meta_data = props_data_read (uri, &error);
 	if (!meta_data)
