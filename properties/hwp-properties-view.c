@@ -38,6 +38,7 @@
 #include "hwp-properties-view.h"
 
 #include <gsf/gsf-meta-names.h>
+#include <gsf/gsf-timestamp.h>
 
 typedef enum {
 	TITLE_PROPERTY,
@@ -216,7 +217,6 @@ hwp_properties_view_set_info (HwpPropertiesView *properties, const GsfDocMetaDat
 	gint       row = 0;
 
 	GsfDocProp *prop;
-	const char *s;
 	int i;
 
 	static const struct {
@@ -240,11 +240,30 @@ hwp_properties_view_set_info (HwpPropertiesView *properties, const GsfDocMetaDat
 		prop = gsf_doc_meta_data_lookup (meta_data, meta_prop[i].key);
 		if (!prop)
 			continue;
-		s = g_value_get_string (gsf_doc_prop_get_val(prop));
-		if (!s || *s == '\0')
+
+		const GValue *value = gsf_doc_prop_get_val(prop);
+		const char *s;
+
+		switch (G_TYPE_FUNDAMENTAL(G_VALUE_TYPE(value))) {
+		case G_TYPE_STRING:
+			s = g_value_get_string (gsf_doc_prop_get_val(prop));
+			if (!s || *s == '\0')
+				continue;
+			set_property (properties, GTK_GRID (grid),
+				      meta_prop[i].prop, s, &row);
+			break;
+		case G_TYPE_BOXED:
+			if (VAL_IS_GSF_TIMESTAMP (value)) {
+				GsfTimestamp* ts = g_value_get_boxed (value);
+				char *sa = gsf_timestamp_as_string (ts);
+				set_property (properties, GTK_GRID (grid),
+					      meta_prop[i].prop, sa, &row);
+			}
+			break;
+		default:
 			continue;
-		set_property (properties, GTK_GRID (grid),
-			      meta_prop[i].prop, s, &row);
+		}
+
 	}
 
 	set_property (properties, GTK_GRID (grid), URI_PROPERTY, properties->uri, &row);
