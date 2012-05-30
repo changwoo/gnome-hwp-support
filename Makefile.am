@@ -1,6 +1,22 @@
 SUBDIRS = thumbnailer properties po
 
-MAINTAINERCLEANFILES = ChangeLog
+MAINTAINERCLEANFILES = \
+	$(srcdir)/INSTALL \
+	$(srcdir)/README \
+	$(srcdir)/aclocal.m4 \
+	$(srcdir)/autoscan.log \
+	$(srcdir)/compile \
+	$(srcdir)/config.guess \
+	$(srcdir)/config.h.in \
+	$(srcdir)/config.sub \
+	$(srcdir)/configure.scan \
+	$(srcdir)/depcomp \
+	$(srcdir)/install-sh \
+	$(srcdir)/ltmain.sh \
+	$(srcdir)/missing \
+	$(srcdir)/mkinstalldirs \
+	$(srcdir)/ChangeLog \
+	`find "$(srcdir)" -type f -name Makefile.in -print`
 
 distclean-local:
 	if test "$(srcdir)" = "."; then :; else \
@@ -21,5 +37,7 @@ ChangeLog:
 	fi
 
 .PHONY: ChangeLog
+
+GITIGNOREFILES = m4
 
 -include $(top_srcdir)/git.mk
