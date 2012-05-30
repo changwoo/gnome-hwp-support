@@ -1,6 +1,6 @@
 /* gnome-hwp-support
  * 
- * Copyright (C) 2011 Changwoo Ryu
+ * Copyright (C) 2011-2012 Changwoo Ryu
  * 
  * This program is free software; you can redistribute it and'or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@
 #include <stdlib.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #include <gsf/gsf-utils.h>
-#include <gsf/gsf-input-stdio.h>
+#include <gsf/gsf-input-gio.h>
 #include <gsf/gsf-infile.h>
 #include <gsf/gsf-infile-msole.h>
 
@@ -51,13 +51,23 @@ main(int argc, char *argv[])
 		exit(1);
 	}
 
-	char *infilename = argv[optind];
+	char *uri = argv[optind];
 	char *outfilename = argv[optind + 1];
 
 	gsf_init();
 
-	GsfInput *input = gsf_input_stdio_new(infilename, NULL);
-	GsfInfile *infile = gsf_infile_msole_new(input, NULL);
+        GError *error;
+	GsfInput *input = gsf_input_gio_new_for_uri(uri, &error);
+	if (error) {
+		fprintf(stderr, "Can't open input file (%s)\n", error->message);
+		exit(1);
+	}
+	
+	GsfInfile *infile = gsf_infile_msole_new(input, &error);
+	if (error) {
+		fprintf(stderr, "Can't read MSOLE data (%s)\n", error->message);
+		exit(1);
+	}
 	g_object_unref(input);
 	GsfInput *child = gsf_infile_child_by_name(infile, "PrvImage");
 	g_object_unref(infile);

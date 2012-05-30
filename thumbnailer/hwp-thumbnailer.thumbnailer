@@ -1,4 +1,4 @@
 [Thumbnailer Entry]
 TryExec=hwp-thumbnailer
-Exec=hwp-thumbnailer -s %s %i %o
+Exec=hwp-thumbnailer -s %s %u %o
 MimeType=application/x-hwp
