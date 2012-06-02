@@ -1,3 +1,13 @@
+0.1.4
+=====
+
+Bug fixes and enhancements
+
+* properties: Check application/x-hwp MIME type
+* properties: Don't link properties with gnome-vfs-2.0 anymore
+* properties: Display timestamp properties correctly
+* thumbnailer: Support URI so it can work on non-local files
+
 0.1.3
 =====
 
