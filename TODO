@@ -1,5 +1,7 @@
 -*- outline -*-
 
-* nautilus property page
+* support old (<5.0) HWP files
 
 * evince backend in the long run
+
+* workaround incorrect encoding by some buggy versions of HWP

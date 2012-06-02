@@ -64,6 +64,8 @@ props_data_read(const char *uri, GError **error)
 	gsf_msole_metadata_read(summary, meta);
 	g_object_unref(summary);
 
+	/* TODO: workaround buggy HWP */
+
 	return meta;
 }
 
