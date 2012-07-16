@@ -56,7 +56,7 @@ main(int argc, char *argv[])
 
 	gsf_init();
 
-        GError *error;
+        GError *error = NULL;
 	GsfInput *input = gsf_input_gio_new_for_uri(uri, &error);
 	if (error) {
 		fprintf(stderr, "Can't open input file (%s)\n", error->message);
