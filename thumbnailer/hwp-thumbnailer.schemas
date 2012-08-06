@@ -1,0 +1,36 @@
+<!--
+  For Nautils (Gnome-2)
+
+  Install schema for the thumbnailer.
+
+	gconftool-2 ~~install-schema-file hwp-thumbnailer.schemas
+
+  (replace "~" above with "-".)
+
+-->
+<gconfschemafile>
+  <schemalist>
+    <schema>
+      <key>/schemas/desktop/gnome/thumbnailers/application@x-hwp/enable</key>
+      <applyto>/desktop/gnome/thumbnailers/application@x-hwp/enable</applyto>
+      <owner>hwp-thumbnailer</owner>
+      <type>bool</type>
+      <default>true</default>
+      <locale name="C">
+	<short></short>
+	<long></long>
+      </locale>
+    </schema>
+    <schema>
+      <key>/schemas/desktop/gnome/thumbnailers/application@x-hwp/command</key>
+      <applyto>/desktop/gnome/thumbnailers/application@x-hwp/command</applyto>
+      <owner>hwp-thumbnailer</owner>
+      <type>string</type>
+      <default>hwp-thumbnailer -s %s %u %o</default>
+      <locale name="C">
+	<short></short>
+	<long></long>
+      </locale>
+    </schema>
+  </schemalist>
+</gconfschemafile>
