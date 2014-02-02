@@ -71,6 +71,10 @@ main(int argc, char *argv[])
     g_object_unref(input);
     GsfInput *child = gsf_infile_child_by_name(infile, "PrvImage");
     g_object_unref(infile);
+    if (!child) {
+        fprintf(stderr, "There is no PrvImage data\n");
+        exit(1);
+    }
     int size = gsf_input_size(child);
 
     unsigned char *buf;
@@ -80,9 +84,18 @@ main(int argc, char *argv[])
     g_object_unref(child);
 
     GdkPixbufLoader *loader = gdk_pixbuf_loader_new();
-    gdk_pixbuf_loader_write(loader, buf, size, NULL);
+    gdk_pixbuf_loader_write(loader, buf, size, &error);
     g_free(buf);
+    if (error) {
+        fprintf(stderr, "Can't parse image data (%s)\n", error->message);
+        exit(1);
+    }
+    
     GdkPixbuf *pixbuf = gdk_pixbuf_loader_get_pixbuf(loader);
+    if (! pixbuf) {
+        fprintf(stderr, "Can't parse image data: gdk_pixbuf_loader_get_pixbuf() failed\n");
+        exit(1);
+    }
     gdk_pixbuf_loader_close(loader, NULL);
 
     int width = gdk_pixbuf_get_width(pixbuf);
@@ -107,8 +120,12 @@ main(int argc, char *argv[])
         }
     }
 
-    gdk_pixbuf_save(pixbuf, outfilename, "png", NULL, NULL);
+    gdk_pixbuf_save(pixbuf, outfilename, "png", &error, NULL);
     g_object_unref(pixbuf);
+    if (error) {
+        fprintf(stderr, "Can't save image (%s)\n", error->message);
+        exit(1);
+    }
 
     gsf_shutdown();
 
