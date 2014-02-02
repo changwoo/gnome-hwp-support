@@ -1,5 +1,5 @@
 AC_PREREQ(2.63)
-AC_INIT([gnome-hwp-support], [0.1.4], [https://github.com/changwoo/gnome-hwp-support/issues], [gnome-hwp-support])
+AC_INIT([gnome-hwp-support], [0.1.5], [https://github.com/changwoo/gnome-hwp-support/issues], [gnome-hwp-support])
 
 AC_CONFIG_SRCDIR([thumbnailer])
 AC_CONFIG_HEADERS([config.h])

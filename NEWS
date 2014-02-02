@@ -1,3 +1,11 @@
+0.1.5
+=====
+
+* thumbnailer: Fix segfault in thumbnailer
+* thumbnailer: More error checks; no more crash on document with no
+  preview image
+* properties: More error checks
+
 0.1.4
 =====
 
