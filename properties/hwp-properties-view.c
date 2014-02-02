@@ -117,42 +117,42 @@ hwp_properties_view_class_init (HwpPropertiesViewClass *properties_class)
 
 /* This is cut out of gconvert.c from glib (and mildly modified).  Not all
    backends give valid UTF-8 for properties, so we make sure that is.
- */
+*/
 static gchar *
 make_valid_utf8 (const gchar *name)
 {
-  GString *string;
-  const gchar *remainder, *invalid;
-  gint remaining_bytes, valid_bytes;
+	GString *string;
+	const gchar *remainder, *invalid;
+	gint remaining_bytes, valid_bytes;
   
-  string = NULL;
-  remainder = name;
-  remaining_bytes = strlen (name);
+	string = NULL;
+	remainder = name;
+	remaining_bytes = strlen (name);
   
-  while (remaining_bytes != 0) 
-    {
-      if (g_utf8_validate (remainder, remaining_bytes, &invalid)) 
-	break;
-      valid_bytes = invalid - remainder;
+	while (remaining_bytes != 0) 
+	{
+		if (g_utf8_validate (remainder, remaining_bytes, &invalid)) 
+			break;
+		valid_bytes = invalid - remainder;
     
-      if (string == NULL) 
-	string = g_string_sized_new (remaining_bytes);
+		if (string == NULL) 
+			string = g_string_sized_new (remaining_bytes);
 
-      g_string_append_len (string, remainder, valid_bytes);
-      g_string_append_c (string, '?');
+		g_string_append_len (string, remainder, valid_bytes);
+		g_string_append_c (string, '?');
       
-      remaining_bytes -= valid_bytes + 1;
-      remainder = invalid + 1;
-    }
+		remaining_bytes -= valid_bytes + 1;
+		remainder = invalid + 1;
+	}
   
-  if (string == NULL)
-    return g_strdup (name);
+	if (string == NULL)
+		return g_strdup (name);
   
-  g_string_append (string, remainder);
+	g_string_append (string, remainder);
 
-  g_assert (g_utf8_validate (string->str, -1, NULL));
+	g_assert (g_utf8_validate (string->str, -1, NULL));
   
-  return g_string_free (string, FALSE);
+	return g_string_free (string, FALSE);
 }
 
 static void

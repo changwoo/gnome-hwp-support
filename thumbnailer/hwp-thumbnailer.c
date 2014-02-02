@@ -1,6 +1,6 @@
 /* gnome-hwp-support
  * 
- * Copyright (C) 2011-2012 Changwoo Ryu
+ * Copyright (C) 2011-2014 Changwoo Ryu
  * 
  * This program is free software; you can redistribute it and'or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,80 +37,80 @@ int max_size = 256;
 int
 main(int argc, char *argv[])
 {
-	int opt;
+    int opt;
 
-	while ((opt = getopt(argc, argv, "s:")) != -1) {
-		switch (opt) {
-		case 's':
-			max_size = atoi(optarg);
-			break;
-		}
-	}
+    while ((opt = getopt(argc, argv, "s:")) != -1) {
+        switch (opt) {
+        case 's':
+            max_size = atoi(optarg);
+            break;
+        }
+    }
 
-	if ((argc - optind) < 2) {
-		exit(1);
-	}
+    if ((argc - optind) < 2) {
+        exit(1);
+    }
 
-	char *uri = argv[optind];
-	char *outfilename = argv[optind + 1];
+    char *uri = argv[optind];
+    char *outfilename = argv[optind + 1];
 
-	gsf_init();
+    gsf_init();
 
-        GError *error = NULL;
-	GsfInput *input = gsf_input_gio_new_for_uri(uri, &error);
-	if (error) {
-		fprintf(stderr, "Can't open input file (%s)\n", error->message);
-		exit(1);
-	}
+    GError *error = NULL;
+    GsfInput *input = gsf_input_gio_new_for_uri(uri, &error);
+    if (error) {
+        fprintf(stderr, "Can't open input file (%s)\n", error->message);
+        exit(1);
+    }
 	
-	GsfInfile *infile = gsf_infile_msole_new(input, &error);
-	if (error) {
-		fprintf(stderr, "Can't read MSOLE data (%s)\n", error->message);
-		exit(1);
-	}
-	g_object_unref(input);
-	GsfInput *child = gsf_infile_child_by_name(infile, "PrvImage");
-	g_object_unref(infile);
-	int size = gsf_input_size(child);
+    GsfInfile *infile = gsf_infile_msole_new(input, &error);
+    if (error) {
+        fprintf(stderr, "Can't read MSOLE data (%s)\n", error->message);
+        exit(1);
+    }
+    g_object_unref(input);
+    GsfInput *child = gsf_infile_child_by_name(infile, "PrvImage");
+    g_object_unref(infile);
+    int size = gsf_input_size(child);
 
-	unsigned char *buf;
-	buf = g_malloc(size);
+    unsigned char *buf;
+    buf = g_malloc(size);
 
-	gsf_input_read(child, size, buf);
-	g_object_unref(child);
+    gsf_input_read(child, size, buf);
+    g_object_unref(child);
 
-	GdkPixbufLoader *loader = gdk_pixbuf_loader_new();
-	gdk_pixbuf_loader_write(loader, buf, size, NULL);
-	g_free(buf);
-	GdkPixbuf *pixbuf = gdk_pixbuf_loader_get_pixbuf(loader);
-	gdk_pixbuf_loader_close(loader, NULL);
+    GdkPixbufLoader *loader = gdk_pixbuf_loader_new();
+    gdk_pixbuf_loader_write(loader, buf, size, NULL);
+    g_free(buf);
+    GdkPixbuf *pixbuf = gdk_pixbuf_loader_get_pixbuf(loader);
+    gdk_pixbuf_loader_close(loader, NULL);
 
-	int width = gdk_pixbuf_get_width(pixbuf);
-	int height = gdk_pixbuf_get_height(pixbuf);
+    int width = gdk_pixbuf_get_width(pixbuf);
+    int height = gdk_pixbuf_get_height(pixbuf);
 
-	if (width > max_size || height > max_size) {
-		int dwidth, dheight;
-		GdkPixbuf *new_pixbuf;
-		if (width > max_size) {
-			dwidth = max_size;
-			dheight = max_size * height / width;
-		}
-		if (height > max_size) {
-			dheight = max_size;
-			dwidth = max_size * width / height;
-		}
+    if (width > max_size || height > max_size) {
+        int dwidth, dheight;
+        GdkPixbuf *new_pixbuf;
+        if (width > max_size) {
+            dwidth = max_size;
+            dheight = max_size * height / width;
+        }
+        if (height > max_size) {
+            dheight = max_size;
+            dwidth = max_size * width / height;
+        }
 
-		new_pixbuf = gdk_pixbuf_scale_simple(pixbuf, dwidth, dheight, GDK_INTERP_BILINEAR);
-		if (new_pixbuf) {
-			g_object_unref(pixbuf);
-			pixbuf = new_pixbuf;
-		}
-	}
+        new_pixbuf = gdk_pixbuf_scale_simple(pixbuf, dwidth, dheight, GDK_INTERP_BILINEAR);
+        if (new_pixbuf) {
+            g_object_unref(pixbuf);
+            pixbuf = new_pixbuf;
+        }
+    }
 
-	gdk_pixbuf_save(pixbuf, outfilename, "png", NULL, NULL);
-	g_object_unref(pixbuf);
+    gdk_pixbuf_save(pixbuf, outfilename, "png", NULL, NULL);
+    g_object_unref(pixbuf);
 
-	gsf_shutdown();
+    gsf_shutdown();
 
-	exit(0);
+    exit(0);
 }
