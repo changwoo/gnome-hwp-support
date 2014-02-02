@@ -35,7 +35,7 @@ props_data_read(const char *uri, GError **error)
     GsfInput *summary;
 
     input = gsf_input_gio_new_for_uri(uri, error);
-    if (error && *error)
+    if (! input)
         return NULL;
     infile = gsf_infile_msole_new(input, NULL);
     g_object_unref(input);
@@ -58,6 +58,7 @@ props_data_read(const char *uri, GError **error)
      */
     memcpy(buf + 28, component_guid, sizeof(component_guid));
     summary = gsf_input_memory_new(buf, size, TRUE);
+    g_free(buf);
 
     GsfDocMetaData *meta;
     meta = gsf_doc_meta_data_new();
