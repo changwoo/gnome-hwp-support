@@ -1,5 +1,5 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8; c-indent-level: 8 -*- */
-/* Copyright (C) 2012 Changwoo Ryu <cwryu@debian.org
+/* Copyright (C) 2012, 2014 Changwoo Ryu <cwryu@debian.org
  *
  * Based on Evince properties/ev-properties-view.c:
  */

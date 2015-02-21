@@ -1,6 +1,6 @@
 /* gnome-hwp-support
  * 
- * Copyright (C) 2011-2014 Changwoo Ryu
+ * Copyright (C) 2011-2015 Changwoo Ryu
  * 
  * This program is free software; you can redistribute it and'or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,10 +16,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, 
  * MA 02110-1301 USA.
- */
-/*
- * 본 제품은 한글과컴퓨터의 한/글 문서 파일(.hwp) 공개 문서를 참고하여
- * 개발하였습니다.
  */
 
 #include <unistd.h>
