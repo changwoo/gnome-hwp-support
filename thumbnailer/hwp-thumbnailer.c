@@ -40,6 +40,9 @@ main(int argc, char *argv[])
         case 's':
             max_size = atoi(optarg);
             break;
+        default:
+            fprintf(stderr, "Unrecognized option %c", opt);
+            exit(1);
         }
     }
 

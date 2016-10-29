@@ -81,7 +81,7 @@ static const PropertyInfo properties_info[] = {
 };
 
 struct _HwpPropertiesView {
-	GtkVBox base_instance;
+	GtkBox base_instance;
 
 	GtkWidget *grid;
 	GtkWidget *labels[N_PROPERTIES];
@@ -89,10 +89,10 @@ struct _HwpPropertiesView {
 };
 
 struct _HwpPropertiesViewClass {
-	GtkVBoxClass base_class;
+	GtkBoxClass base_class;
 };
 
-G_DEFINE_TYPE (HwpPropertiesView, hwp_properties_view, GTK_TYPE_VBOX)
+G_DEFINE_TYPE (HwpPropertiesView, hwp_properties_view, GTK_TYPE_BOX)
 
 static void
 hwp_properties_view_dispose (GObject *object)
@@ -217,7 +217,7 @@ hwp_properties_view_set_info (HwpPropertiesView *properties, const GsfDocMetaDat
 	gint       row = 0;
 
 	GsfDocProp *prop;
-	int i;
+	unsigned i;
 
 	static const struct {
 		const char *key;
@@ -272,6 +272,8 @@ hwp_properties_view_set_info (HwpPropertiesView *properties, const GsfDocMetaDat
 static void
 hwp_properties_view_init (HwpPropertiesView *properties)
 {
+	gtk_orientable_set_orientation (GTK_ORIENTABLE (properties),
+					GTK_ORIENTATION_VERTICAL);
 	properties->grid = gtk_grid_new ();
 	gtk_grid_set_column_spacing (GTK_GRID (properties->grid), 12);
 	gtk_grid_set_row_spacing (GTK_GRID (properties->grid), 6);

@@ -62,7 +62,7 @@ props_data_read(const char *uri, GError **error)
 
     GsfDocMetaData *meta;
     meta = gsf_doc_meta_data_new();
-    gsf_msole_metadata_read(summary, meta);
+    gsf_doc_meta_data_read_from_msole(meta, summary);
     g_object_unref(summary);
 
     /* TODO: workaround buggy HWP */
