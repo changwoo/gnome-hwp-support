@@ -13,11 +13,12 @@ LT_PREREQ([2.2.6])
 LT_INIT([dlopen disable-static])
 
 AC_PROG_CC
+AC_PROG_CC_C99
 AM_PROG_CC_C_O
 AC_HEADER_STDC
 
-WARN_CFLAGS=-Wno-declaration-after-statement
-AX_COMPILER_FLAGS([WARN_CFLAGS], [])
+# WARN_CFLAGS=-Wno-declaration-after-statement
+# AX_COMPILER_FLAGS([WARN_CFLAGS], [])
 
 IT_PROG_INTLTOOL([0.35.0])
 
