@@ -1,3 +1,10 @@
+0.1.6
+=====
+
+Maintenance only release. No visible changes.
+
+* Don't use gnome-common anymore.
+
 0.1.5
 =====
 

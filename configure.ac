@@ -1,5 +1,5 @@
 AC_PREREQ(2.63)
-AC_INIT([gnome-hwp-support], [0.1.5], [https://github.com/changwoo/gnome-hwp-support/issues], [gnome-hwp-support])
+AC_INIT([gnome-hwp-support], [0.1.6], [https://github.com/changwoo/gnome-hwp-support/issues], [gnome-hwp-support])
 
 AC_CONFIG_SRCDIR([thumbnailer])
 AC_CONFIG_HEADERS([config.h])
@@ -16,9 +16,6 @@ AC_PROG_CC
 AC_PROG_CC_C99
 AM_PROG_CC_C_O
 AC_HEADER_STDC
-
-# WARN_CFLAGS=-Wno-declaration-after-statement
-# AX_COMPILER_FLAGS([WARN_CFLAGS], [])
 
 IT_PROG_INTLTOOL([0.35.0])
 
