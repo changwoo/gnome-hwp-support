@@ -34,7 +34,8 @@ main(int argc, char *argv[])
 
     gsf_init();
 
-    meta_data = props_data_read(uri, NULL);
+    GError *error;
+    meta_data = props_data_read(uri, &error);
     if (meta_data) {
         prop = gsf_doc_meta_data_lookup(meta_data, GSF_META_NAME_TITLE);
         if (prop) {
@@ -44,6 +45,9 @@ main(int argc, char *argv[])
             fprintf(stderr, "str: %s\n", tmp);
         }
         g_object_unref(meta_data);
+    } else {
+        fprintf(stderr, "Unable to read: %s\n", error->message);
+        exit(1);
     }
 
     exit(0);

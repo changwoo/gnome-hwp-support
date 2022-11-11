@@ -28,7 +28,7 @@ PKG_CHECK_MODULES([THUMBNAILER],[libgsf-1 gdk-pixbuf-2.0])
 AC_SUBST(THUMBNAILER_CFLAGS)
 AC_SUBST(THUMBNAILER_LIBS)
 
-PKG_CHECK_MODULES([PROPERTIES],[libnautilus-extension libgsf-1])
+PKG_CHECK_MODULES([PROPERTIES],[gtk4 libnautilus-extension-4 libgsf-1])
 NAUTILUS_EXTENSION_DIR=`$PKG_CONFIG --variable=extensiondir libnautilus-extension`
 NAUTILUS_EXTENSION_DIR=${NAUTILUS_EXTENSION_DIR#`$PKG_CONFIG --variable=libdir libnautilus-extension`}
 NAUTILUS_EXTENSION_DIR=${NAUTILUS_EXTENSION_DIR#/}

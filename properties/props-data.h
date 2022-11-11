@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2012 Changwoo Ryu
+ * Copyright (C) 2012-2022 Changwoo Ryu
  * 
  * This program is free software; you can redistribute it and'or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,6 @@
 
 #include <gsf/gsf-doc-meta-data.h>
 
-GsfDocMetaData *props_data_read(const char *filename, GError **error);
+GsfDocMetaData *props_data_read(const char *uri, GError **error);
 
 #endif /* __PROPS_DATA_H__ */

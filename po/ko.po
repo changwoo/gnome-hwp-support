@@ -5,8 +5,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-hwp-support\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-26 20:09+0900\n"
-"PO-Revision-Date: 2012-05-26 20:09+0900\n"
+"POT-Creation-Date: 2022-11-14 03:12+0900\n"
+"PO-Revision-Date: 2022-11-14 03:12+0900\n"
 "Last-Translator: Changwoo Ryu <cwryu@debian.org>\n"
 "Language-Team: GNOME Korea <gnome-kr@googlegroups.com>\n"
 "Language: ko\n"
@@ -14,66 +14,34 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../properties/hwp-properties-view.c:66
-msgid "Title:"
-msgstr "제목:"
+#: ../properties/hwp-properties-model.c:34
+msgid "Creator"
+msgstr "만든 사람"
 
-#: ../properties/hwp-properties-view.c:67
-msgid "Location:"
-msgstr "위치:"
+#: ../properties/hwp-properties-model.c:35
+msgid "Modified"
+msgstr "수정 시각"
 
-#: ../properties/hwp-properties-view.c:68
-msgid "Subject:"
-msgstr "주제:"
+#: ../properties/hwp-properties-model.c:36
+msgid "Created"
+msgstr "만든 시각"
 
-#: ../properties/hwp-properties-view.c:69
-msgid "Author:"
-msgstr "저자:"
+#: ../properties/hwp-properties-model.c:37
+msgid "Title"
+msgstr "제목"
 
-#: ../properties/hwp-properties-view.c:70
-msgid "Keywords:"
-msgstr "키워드:"
+#: ../properties/hwp-properties-model.c:38
+msgid "Keywords"
+msgstr "키워드"
 
-#: ../properties/hwp-properties-view.c:71
-msgid "Producer:"
-msgstr "제작:"
+#: ../properties/hwp-properties-model.c:39
+msgid "Subject"
+msgstr "주제"
 
-#: ../properties/hwp-properties-view.c:72
-msgid "Creator:"
-msgstr "만든 사람:"
+#: ../properties/hwp-properties-model.c:40
+msgid "Number of pages"
+msgstr "페이지 수"
 
-#: ../properties/hwp-properties-view.c:73
-msgid "Created:"
-msgstr "만든 시각:"
-
-#: ../properties/hwp-properties-view.c:74
-msgid "Modified:"
-msgstr "수정 시각:"
-
-#: ../properties/hwp-properties-view.c:75
-msgid "Number of Pages:"
-msgstr "페이지 수:"
-
-#: ../properties/hwp-properties-view.c:76
-msgid "Optimized:"
-msgstr "최적화:"
-
-#: ../properties/hwp-properties-view.c:77
-msgid "Format:"
-msgstr "형식:"
-
-#: ../properties/hwp-properties-view.c:78
-msgid "Security:"
-msgstr "보안:"
-
-#: ../properties/hwp-properties-view.c:79
-msgid "Paper Size:"
-msgstr "종이 크기:"
-
-#: ../properties/hwp-properties-view.c:193
-msgid "None"
-msgstr "없음"
-
-#: ../properties/hwp-properties-main.c:115
-msgid "HWP Document"
-msgstr "HWP 문서"
+#: ../properties/hwp-properties-model.c:120
+msgid "HWP document properties"
+msgstr "HWP 문서 속성"
