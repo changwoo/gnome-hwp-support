@@ -1,5 +1,5 @@
 AC_PREREQ(2.63)
-AC_INIT([gnome-hwp-support], [0.1.6], [https://github.com/changwoo/gnome-hwp-support/issues], [gnome-hwp-support])
+AC_INIT([gnome-hwp-support], [0.2.0], [https://github.com/changwoo/gnome-hwp-support/issues], [gnome-hwp-support])
 
 AC_CONFIG_SRCDIR([thumbnailer])
 AC_CONFIG_HEADERS([config.h])
@@ -29,8 +29,8 @@ AC_SUBST(THUMBNAILER_CFLAGS)
 AC_SUBST(THUMBNAILER_LIBS)
 
 PKG_CHECK_MODULES([PROPERTIES],[gtk4 libnautilus-extension-4 libgsf-1])
-NAUTILUS_EXTENSION_DIR=`$PKG_CONFIG --variable=extensiondir libnautilus-extension`
-NAUTILUS_EXTENSION_DIR=${NAUTILUS_EXTENSION_DIR#`$PKG_CONFIG --variable=libdir libnautilus-extension`}
+NAUTILUS_EXTENSION_DIR=`$PKG_CONFIG --variable=extensiondir libnautilus-extension-4`
+NAUTILUS_EXTENSION_DIR=${NAUTILUS_EXTENSION_DIR#`$PKG_CONFIG --variable=libdir libnautilus-extension-4`}
 NAUTILUS_EXTENSION_DIR=${NAUTILUS_EXTENSION_DIR#/}
 AC_SUBST(PROPERTIES_CFLAGS)
 AC_SUBST(PROPERTIES_LIBS)

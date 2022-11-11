@@ -1,5 +1,7 @@
 -*- outline -*-
 
+* Use meson for building
+
 * support old (<5.0) HWP files
 
 * workaround incorrect encoding by some buggy versions of HWP
