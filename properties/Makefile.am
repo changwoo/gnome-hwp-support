@@ -15,6 +15,7 @@ libnautilus_hwp_properties_la_SOURCES =		\
 	props-data.c				\
 	props-data.h				\
 	hwp-properties-model-provider.c		\
+	hwp-properties-model-provider.h		\
 	hwp-properties-model.c			\
 	hwp-properties-model.h			\
 	hwp-properties-module.c
