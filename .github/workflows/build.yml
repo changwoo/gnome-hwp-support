@@ -1,0 +1,47 @@
+name: Meson Build and Dist Check
+
+on:
+  push:
+    branches: [ '**' ]
+  pull_request:
+    branches: [ '**' ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          gettext \
+          libglib2.0-dev \
+          libnautilus-extension-dev \
+          libgdk-pixbuf2.0-dev \
+          libgsf-1-dev \
+          meson \
+          ninja-build \
+          pkg-config
+
+    - name: Setup Build Directory
+      run: meson setup builddir --prefix=/usr
+
+    - name: Compile
+      run: meson compile -C builddir
+
+    - name: Run Tests
+      run: meson test -C builddir
+
+    - name: Dist Check (Tarball Verification)
+      run: meson dist -C builddir --no-tests
+
+    - name: Upload Artifacts
+      if: success()
+      uses: actions/upload-artifact@v4
+      with:
+        name: release-tarball
+        path: builddir/meson-dist/*.tar.xz

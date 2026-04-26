@@ -24,6 +24,7 @@
  * XMP support by Hubert Figuiere <hfiguiere@novell.com>
  */
 
+#include <config.h>
 #include "hwp-properties-model.h"
 #include "props-data.h"
 
