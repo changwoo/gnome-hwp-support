@@ -1,6 +1,6 @@
-/* 
+/*
  * Copyright (C) 2012 Changwoo Ryu
- * 
+ *
  * This program is free software; you can redistribute it and'or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2, or (at your option)
@@ -14,41 +14,35 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, see <http://www.gnu.org/licenses/>.
  */
+#include <config.h>
 #include <stdlib.h>
+#include <locale.h>
 
 #include <gsf/gsf-utils.h>
 #include <gsf/gsf-meta-names.h>
+#include <glib/gi18n-lib.h>
 
 #include <stdio.h>
 
 #include "props-data.h"
 
+static void
+prop_callback (const char *name, const char *value, gpointer user_data)
+{
+    printf("%s: %s\n", dgettext("nautilus", name), value);
+}
+
 int
 main(int argc, char *argv[])
 {
     char *uri = argv[1];
-    GsfDocMetaData *meta_data;
-    GsfDocProp *prop;
-    const GValue *value;
-    const char *tmp;
 
+    setlocale(LC_ALL, "");
+    bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
+    bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
     gsf_init();
 
-    GError *error;
-    meta_data = props_data_read(uri, &error);
-    if (meta_data) {
-        prop = gsf_doc_meta_data_lookup(meta_data, GSF_META_NAME_TITLE);
-        if (prop) {
-            value = gsf_doc_prop_get_val(prop);
-
-            tmp = g_value_get_string(value);
-            fprintf(stderr, "str: %s\n", tmp);
-        }
-        g_object_unref(meta_data);
-    } else {
-        fprintf(stderr, "Unable to read: %s\n", error->message);
-        exit(1);
-    }
+    props_data_for_each(uri, prop_callback, NULL);
 
     exit(0);
 }

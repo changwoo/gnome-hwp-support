@@ -19,3 +19,10 @@ shared_module('hwp-properties',
   install_dir: extensiondir,
   gnu_symbol_visibility: 'hidden',
 )
+
+test_exe = executable('test-prop',
+  sources + ['test-prop.c'],
+  dependencies: [nautilus_dep, libgsf_dep, glib_dep, gobject_dep],
+  include_directories: config_inc,
+  install: false
+)

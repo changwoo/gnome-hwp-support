@@ -1,5 +1,5 @@
 /* 
- * Copyright (C) 2012-2022 Changwoo Ryu
+ * Copyright (C) 2012-2026 Changwoo Ryu
  * 
  * This program is free software; you can redistribute it and'or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,8 @@
 
 #include <gsf/gsf-doc-meta-data.h>
 
-GsfDocMetaData *props_data_read(const char *uri, GError **error);
+typedef void (*HwpPropCallback) (const char *name, const char *value, gpointer user_data);
+
+void props_data_for_each(const char *uri, HwpPropCallback callback, gpointer user_data);
 
 #endif /* __PROPS_DATA_H__ */
