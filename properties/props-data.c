@@ -19,40 +19,137 @@
 
 #include <string.h>
 
-#include <gsf/gsf-doc-meta-data.h>
-#include <gsf/gsf-infile-msole.h>
-#include <gsf/gsf-infile.h>
-#include <gsf/gsf-input-gio.h>
-#include <gsf/gsf-input-memory.h>
-#include <gsf/gsf-input-stdio.h>
-#include <gsf/gsf-msole-utils.h>
-#include <gsf/gsf-utils.h>
-#include <gsf/gsf-meta-names.h>
-#include <gsf/gsf-timestamp.h>
-
 #include <glib/gi18n-lib.h>
 
+#include <gsf/gsf.h>
 
-static GsfDocMetaData *
-props_data_read_internal(const char *uri)
+
+typedef struct {
+    PropItemCallback callback;
+    gpointer user_data;
+    char* meta_name;
+} HwpxXmlContext;
+
+/* <opf:title> */
+static void
+hwpx_metadata_title_end (GsfXMLIn *xin, GsfXMLBlob *unknown)
 {
-    GsfInput *input;
-    GsfInfile *infile;
-    GsfInput *summary;
-    GError *error = NULL;
+    HwpxXmlContext *ctx = xin->user_state;
+    ctx->callback (_("Title"), xin->content->str, ctx->user_data);
+}
 
-    input = gsf_input_gio_new_for_uri(uri, &error);
-    if (!input) {
-        if (error) g_error_free(error);
-        return NULL;
+/* <opf:meta> */
+static void
+hwpx_metadata_meta_start (GsfXMLIn *xin, xmlChar const **attrs)
+{
+    HwpxXmlContext *ctx = xin->user_state;
+
+    for (int i = 0; attrs[i] != NULL; i += 2) {
+        if (g_strcmp0 ((char*) attrs[i], "name") == 0) {
+            ctx->meta_name = g_strdup(attrs[i+1]);
+            break;
+        }
+    }
+}
+
+static void
+hwpx_metadata_meta_end (GsfXMLIn *xin, GsfXMLBlob *unknown)
+{
+    HwpxXmlContext *ctx = xin->user_state;
+
+    const char* name = ctx->meta_name;
+    const char* value = xin->content->str;
+
+    if (name && value && *value) {
+        const char *label = name;
+        if (g_strcmp0(name, "CreatedDate") == 0) label = _("Created");
+        else if (g_strcmp0(name, "ModifiedDate") == 0) label = _("Modified");
+        else if (g_strcmp0(name, "creator") == 0) label = _("Creator");
+        else if (g_strcmp0(name, "subject") == 0) label = _("Subject");
+        else if (g_strcmp0(name, "keyword") == 0) label = _("Keywords");
+        else if (g_strcmp0(name, "description") == 0) label = _("Description");
+        else if (g_strcmp0(name, "language") == 0) label = _("Language");
+        else if (g_strcmp0(name, "lastsaveby") == 0) label = _("Last save by");
+
+        ctx->callback (label, value, ctx->user_data);
+
+        g_free(name);
+    }
+}
+
+enum {
+    TAG_ROOT = 1,
+    TAG_PACKAGE ,
+    TAG_METADATA,
+    TAG_TITLE,
+    TAG_META,
+    TAG_LANGUAGE,
+    TAG_MANIFEST,
+    TAG_MANIFEST_ITEM,
+    TAG_SPINE,
+    TAG_SPINE_ITEMREF,
+};
+
+enum {
+    HWP_NS_OPF = 1,
+    HWP_NS_HPF,
+};
+
+static const GsfXMLInNS hwpx_content_hpf_ns[] = {
+    GSF_XML_IN_NS (HWP_NS_OPF, "http://www.idpf.org/2007/opf/"),
+    GSF_XML_IN_NS (HWP_NS_HPF, "http://www.hancom.co.kr/schema/2011/hpf"),
+    GSF_XML_IN_NS_END
+};
+
+static const GsfXMLInNode hwpx_content_hpf_dtd[] = {
+    GSF_XML_IN_NODE_FULL(TAG_ROOT, TAG_ROOT, -1, NULL, GSF_XML_NO_CONTENT, FALSE, TRUE, NULL, NULL, 0),
+    GSF_XML_IN_NODE(TAG_ROOT, TAG_PACKAGE, HWP_NS_OPF, "package", FALSE, NULL, NULL),
+      GSF_XML_IN_NODE(TAG_PACKAGE, TAG_METADATA, HWP_NS_OPF, "metadata", FALSE, NULL, NULL),
+        /* <opf:title> */
+        GSF_XML_IN_NODE(TAG_METADATA, TAG_TITLE, HWP_NS_OPF, "title", TRUE, NULL, hwpx_metadata_title_end),
+        /* <opf:meta> */
+        GSF_XML_IN_NODE(TAG_METADATA, TAG_META, HWP_NS_OPF, "meta", TRUE, hwpx_metadata_meta_start, hwpx_metadata_meta_end),
+        GSF_XML_IN_NODE(TAG_METADATA, TAG_LANGUAGE, HWP_NS_OPF, "language", TRUE, NULL, NULL),
+      GSF_XML_IN_NODE(TAG_PACKAGE, TAG_MANIFEST, HWP_NS_OPF, "manifest", FALSE, NULL, NULL),
+        GSF_XML_IN_NODE(TAG_MANIFEST, TAG_MANIFEST_ITEM, HWP_NS_OPF, "item", FALSE, NULL, NULL),
+      GSF_XML_IN_NODE(TAG_PACKAGE, TAG_SPINE, HWP_NS_OPF, "spine", FALSE, NULL, NULL),
+        GSF_XML_IN_NODE(TAG_SPINE, TAG_SPINE_ITEMREF, HWP_NS_OPF, "itemref", FALSE, NULL, NULL),
+    GSF_XML_IN_NODE_END
+};
+
+
+static void
+props_data_for_each_hwpx(GsfInfile        *infile,
+                         PropItemCallback  callback,
+                         gpointer          user_data)
+{
+    GsfInput *hpf_input = gsf_infile_child_by_vname(infile, "Contents", "content.hpf", NULL);
+    if (!hpf_input) return;
+
+    HwpxXmlContext ctx = { callback, user_data, 0 };
+
+    GsfXMLInDoc *xin = gsf_xml_in_doc_new(hwpx_content_hpf_dtd, hwpx_content_hpf_ns);
+
+    if (!gsf_xml_in_doc_parse(xin, hpf_input, &ctx)) {
+        g_warning ("Failed to parse HWPX content.hpf");
     }
 
-    infile = gsf_infile_msole_new(input, NULL);
-    g_object_unref(input);
-    if (!infile) return NULL;
+    gsf_xml_in_doc_free(xin);
+    g_object_unref (hpf_input);
+}
 
-    summary = gsf_infile_child_by_name(infile, "\005HwpSummaryInformation");
-    g_object_unref(infile);
+
+static char*
+format_timestamp(GsfTimestamp *ts)
+{
+    g_autoptr(GDateTime) dt = g_date_time_new_from_unix_local(ts->timet);
+    return g_date_time_format(dt, "%c");
+}
+
+static GsfDocMetaData *
+props_data_read_hwp5_metadata(GsfInfile *infile)
+{
+    GsfInput* summary = gsf_infile_child_by_name(infile, "\005HwpSummaryInformation");
     if (!summary) return NULL;
 
     static guint8 const component_guid [] = {
@@ -80,22 +177,17 @@ props_data_read_internal(const char *uri)
     return meta;
 }
 
-static char*
-format_timestamp(GsfTimestamp *ts)
-{
-    g_autoptr(GDateTime) dt = g_date_time_new_from_unix_local(ts->timet);
-    return g_date_time_format(dt, "%c");
-}
-
-void
-props_data_for_each(const char *uri, HwpPropCallback callback, gpointer user_data)
+static void
+props_data_for_each_hwp5(GsfInfile        *infile,
+                         PropItemCallback  callback,
+                         gpointer          user_data)
 {
     GsfDocMetaData *meta_data;
     unsigned i;
 
     if (!callback) return;
 
-    meta_data = props_data_read_internal(uri);
+    meta_data = props_data_read_hwp5_metadata(infile);
     if (!meta_data) return;
 
     static const struct {
@@ -109,6 +201,8 @@ props_data_for_each(const char *uri, HwpPropCallback callback, gpointer user_dat
         { GSF_META_NAME_KEYWORDS, N_("Keywords") },
         { GSF_META_NAME_SUBJECT, N_("Subject") },
         { GSF_META_NAME_PAGE_COUNT, N_("Number of pages") },
+        { GSF_META_NAME_LANGUAGE, N_("Language") },
+        { GSF_META_NAME_DESCRIPTION, N_("Description") },
     };
 
     for (i = 0; i < G_N_ELEMENTS(meta_prop); i++) {
@@ -140,3 +234,32 @@ props_data_for_each(const char *uri, HwpPropCallback callback, gpointer user_dat
 
     g_object_unref(meta_data);
 }
+
+void
+props_data_for_each(const char *uri, PropItemCallback callback,
+                    gpointer user_data)
+{
+    GsfInput* input = NULL;
+    GError *error = NULL;
+
+    input = gsf_input_gio_new_for_uri(uri, &error);
+    if (!input) return;
+
+    // try hwpx
+    gsf_input_seek(input, 0, G_SEEK_SET);
+    GsfInfile* zip = gsf_infile_zip_new(input, NULL);
+    if (zip) {
+        props_data_for_each_hwpx(zip, callback, user_data);
+        g_object_unref(zip);
+        return;
+    }
+
+    // try hwp v5
+    gsf_input_seek(input, 0, G_SEEK_SET);
+    GsfInfile* msole = gsf_infile_msole_new(input, NULL);
+    if (msole) {
+        props_data_for_each_hwp5(msole, callback, user_data);
+        g_object_unref(msole);
+    }
+}
+

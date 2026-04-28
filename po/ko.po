@@ -5,8 +5,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-hwp-support\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-11-14 03:12+0900\n"
-"PO-Revision-Date: 2022-11-14 03:12+0900\n"
+"POT-Creation-Date: 2026-04-29 01:53+0900\n"
+"PO-Revision-Date: 2026-04-29 01:53+0900\n"
 "Last-Translator: Changwoo Ryu <cwryu@debian.org>\n"
 "Language-Team: GNOME Korea <gnome-kr@googlegroups.com>\n"
 "Language: ko\n"
@@ -14,34 +14,46 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../properties/hwp-properties-model.c:34
-msgid "Creator"
-msgstr "만든 사람"
+#: properties/hwp-properties-model.c:82
+msgid "HWP document properties"
+msgstr "HWP 문서 속성"
 
-#: ../properties/hwp-properties-model.c:35
-msgid "Modified"
-msgstr "수정 시각"
-
-#: ../properties/hwp-properties-model.c:36
-msgid "Created"
-msgstr "만든 시각"
-
-#: ../properties/hwp-properties-model.c:37
+#: properties/props-data.c:38 properties/props-data.c:200
 msgid "Title"
 msgstr "제목"
 
-#: ../properties/hwp-properties-model.c:38
-msgid "Keywords"
-msgstr "키워드"
+#: properties/props-data.c:65 properties/props-data.c:199
+msgid "Created"
+msgstr "만든 시각"
 
-#: ../properties/hwp-properties-model.c:39
+#: properties/props-data.c:66 properties/props-data.c:198
+msgid "Modified"
+msgstr "수정 시각"
+
+#: properties/props-data.c:67 properties/props-data.c:197
+msgid "Creator"
+msgstr "만든 사람"
+
+#: properties/props-data.c:68 properties/props-data.c:202
 msgid "Subject"
 msgstr "주제"
 
-#: ../properties/hwp-properties-model.c:40
+#: properties/props-data.c:69 properties/props-data.c:201
+msgid "Keywords"
+msgstr "키워드"
+
+#: properties/props-data.c:70 properties/props-data.c:205
+msgid "Description"
+msgstr "설명"
+
+#: properties/props-data.c:71 properties/props-data.c:204
+msgid "Language"
+msgstr "언어"
+
+#: properties/props-data.c:72
+msgid "Last save by"
+msgstr "마지막 저장한 사람"
+
+#: properties/props-data.c:203
 msgid "Number of pages"
 msgstr "페이지 수"
-
-#: ../properties/hwp-properties-model.c:120
-msgid "HWP document properties"
-msgstr "HWP 문서 속성"

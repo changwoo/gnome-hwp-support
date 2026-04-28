@@ -16,4 +16,3 @@ libgsf_dep = dependency('libgsf-1')
 subdir('po')
 subdir('properties')
 subdir('thumbnailer')
-
