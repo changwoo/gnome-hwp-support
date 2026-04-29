@@ -1,5 +1,4 @@
 *.cache
 .deps
 .libs
-m4
-
+po/*.pot

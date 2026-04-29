@@ -12,8 +12,14 @@ sources = [
 ]
 
 shared_module('hwp-properties',
-  sources,
+  sources: [
+    'hwp-properties-model-provider.c',
+    'hwp-properties-model.c',
+    'hwp-properties-module.c',
+    'props-data.c',
+  ],
   dependencies: [nautilus_dep, libgsf_dep, glib_dep, gobject_dep],
+  c_args: ['-DG_LOG_DOMAIN="hwp-properties"'],
   include_directories: config_inc,
   install: true,
   install_dir: extensiondir,
@@ -21,7 +27,10 @@ shared_module('hwp-properties',
 )
 
 test_exe = executable('test-prop',
-  sources + ['test-prop.c'],
+  sources: [
+    'props-data.c',
+    'test-prop.c',
+  ],
   dependencies: [nautilus_dep, libgsf_dep, glib_dep, gobject_dep],
   include_directories: config_inc,
   install: false

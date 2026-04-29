@@ -30,6 +30,16 @@
 #include <gsf/gsf-utils.h>
 #include "hwp-properties-model-provider.h"
 
+#ifdef __has_attribute
+#if __has_attribute(__visibility__)
+#define PUBLIC __attribute__ ((__visibility__("default")))
+#endif
+#endif
+#ifndef PUBLIC
+#define PUBLIC
+#endif
+
+PUBLIC
 void
 nautilus_module_initialize (GTypeModule *module)
 {
@@ -41,12 +51,14 @@ nautilus_module_initialize (GTypeModule *module)
     gsf_init();
 }
 
+PUBLIC
 void
 nautilus_module_shutdown (void)
 {
     gsf_shutdown();
 }
 
+PUBLIC
 void
 nautilus_module_list_types (const GType **types,
                             int          *num_types)

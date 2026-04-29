@@ -35,14 +35,31 @@ prop_callback (const char *name, const char *value, gpointer user_data)
 int
 main(int argc, char *argv[])
 {
-    char *uri = argv[1];
+    char* path = argv[1];
+    g_autoptr(GError) err;
+
+    g_autofree char* abs_path = g_canonicalize_filename(path, NULL);
+    g_autofree char* uri = g_filename_to_uri(abs_path, NULL, &err);
+    if (uri == NULL) {
+        g_printerr("Not a HWP or HWPX: %s", err->message);
+        exit(1);
+    }
 
     setlocale(LC_ALL, "");
     bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
     bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
     gsf_init();
 
-    props_data_for_each(uri, prop_callback, NULL);
+    char* mime_type = NULL;
+    if (g_str_has_suffix(path, ".hwpx"))
+        mime_type = "application/x-hwpx";
+    else if (g_str_has_suffix(path, ".hwp"))
+        mime_type = "application/x-hwp";
+    else {
+        g_warning("Not a HWP or HWPX");
+        exit(1);
+    }
 
+    props_data_for_each(uri, mime_type, prop_callback, NULL);
     exit(0);
 }

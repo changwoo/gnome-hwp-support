@@ -29,6 +29,7 @@
 #include "props-data.h"
 
 #include <glib/gi18n-lib.h>
+#include <stdio.h>
 
 typedef struct _HwpPropertiesModel HwpPropertiesModel;
 struct _HwpPropertiesModel {
@@ -62,10 +63,9 @@ hwp_properties_model_load_from_file_info (HwpPropertiesModel *self,
                                           NautilusFileInfo   *file_info)
 {
     g_autofree char *uri = nautilus_file_info_get_uri (file_info);
+    g_debug("uri: %s", uri);
     g_autofree char *mime_type = nautilus_file_info_get_mime_type (file_info);
-    if (strcmp(mime_type, "application/x-hwp") == 0) {
-        props_data_for_each(uri, hwp_prop_callback, self);
-    }
+    props_data_for_each(uri, mime_type, hwp_prop_callback, self);
 }
 
 NautilusPropertiesModel *

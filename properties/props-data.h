@@ -21,6 +21,6 @@
 
 typedef void (*PropItemCallback) (const char *name, const char *value, gpointer user_data);
 
-void props_data_for_each(const char *uri, PropItemCallback callback, gpointer user_data);
+void props_data_for_each(const char *uri, const char* mime_type, PropItemCallback callback, gpointer user_data);
 
 #endif /* __PROPS_DATA_H__ */

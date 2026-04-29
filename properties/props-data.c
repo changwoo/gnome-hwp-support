@@ -30,6 +30,39 @@ typedef struct {
     char* meta_name;
 } HwpxXmlContext;
 
+enum {
+    PROP_TYPE_STRING,
+    PROP_TYPE_DATE_TIME,
+};
+
+struct _MetaItem {
+    char* name;
+    char* label;
+    int type;
+};
+typedef struct _MetaItem MetaItem;
+
+static MetaItem META_ITEMS[] = {
+    { .name = "CreatedDate", .label = N_("Created"),
+      .type = PROP_TYPE_DATE_TIME },
+    { .name = "ModifiedDate", .label = N_("Modified"),
+      .type = PROP_TYPE_DATE_TIME },
+    { .name = "creator", .label = N_("Creator"),
+      .type = PROP_TYPE_STRING },
+    { .name = "subject", .label = N_("Subject"),
+      .type = PROP_TYPE_STRING },
+    { .name = "keyword", .label = N_("Keywords"),
+      .type = PROP_TYPE_STRING },
+    { .name = "description", .label = N_("Description"),
+      .type = PROP_TYPE_STRING },
+    { .name = "language", .label = N_("Language"),
+      .type = PROP_TYPE_STRING },
+    { .name = "lastsaveby", .label = N_("Last save by"),
+      .type = PROP_TYPE_STRING },
+};
+
+#define NUMBER_META_ITEMS (sizeof(META_ITEMS)/sizeof(META_ITEMS[0]))
+
 /* <opf:title> */
 static void
 hwpx_metadata_title_end (GsfXMLIn *xin, GsfXMLBlob *unknown)
@@ -46,7 +79,7 @@ hwpx_metadata_meta_start (GsfXMLIn *xin, xmlChar const **attrs)
 
     for (int i = 0; attrs[i] != NULL; i += 2) {
         if (g_strcmp0 ((char*) attrs[i], "name") == 0) {
-            ctx->meta_name = g_strdup(attrs[i+1]);
+            ctx->meta_name = g_strdup((char*) attrs[i+1]);
             break;
         }
     }
@@ -57,21 +90,33 @@ hwpx_metadata_meta_end (GsfXMLIn *xin, GsfXMLBlob *unknown)
 {
     HwpxXmlContext *ctx = xin->user_state;
 
-    const char* name = ctx->meta_name;
+    char* name = ctx->meta_name;
     const char* value = xin->content->str;
 
     if (name && value && *value) {
         const char *label = name;
-        if (g_strcmp0(name, "CreatedDate") == 0) label = _("Created");
-        else if (g_strcmp0(name, "ModifiedDate") == 0) label = _("Modified");
-        else if (g_strcmp0(name, "creator") == 0) label = _("Creator");
-        else if (g_strcmp0(name, "subject") == 0) label = _("Subject");
-        else if (g_strcmp0(name, "keyword") == 0) label = _("Keywords");
-        else if (g_strcmp0(name, "description") == 0) label = _("Description");
-        else if (g_strcmp0(name, "language") == 0) label = _("Language");
-        else if (g_strcmp0(name, "lastsaveby") == 0) label = _("Last save by");
 
-        ctx->callback (label, value, ctx->user_data);
+        for (int i = 0; i < NUMBER_META_ITEMS; i++) {
+            MetaItem *item = &META_ITEMS[i];
+
+            if (g_strcmp0(name, item->name) == 0) {
+                label = item->label;
+                switch (item->type) {
+                    case PROP_TYPE_DATE_TIME: {
+                        g_autoptr(GDateTime) dt = g_date_time_new_from_iso8601(value, NULL);
+                        g_autoptr(GDateTime) local_dt = g_date_time_to_local(dt);
+                        g_autofree char *dtstr = g_date_time_format(local_dt, "%c");
+                        ctx->callback (_(label), dtstr, ctx->user_data);
+                        break;
+                    }
+                    case PROP_TYPE_STRING:
+                    default:
+                        ctx->callback (_(label), value, ctx->user_data);
+                        break;
+                }
+                break;
+            }
+        }
 
         g_free(name);
     }
@@ -236,8 +281,8 @@ props_data_for_each_hwp5(GsfInfile        *infile,
 }
 
 void
-props_data_for_each(const char *uri, PropItemCallback callback,
-                    gpointer user_data)
+props_data_for_each(const char *uri, const char *mime_type,
+                    PropItemCallback callback, gpointer user_data)
 {
     GsfInput* input = NULL;
     GError *error = NULL;
@@ -245,21 +290,21 @@ props_data_for_each(const char *uri, PropItemCallback callback,
     input = gsf_input_gio_new_for_uri(uri, &error);
     if (!input) return;
 
-    // try hwpx
-    gsf_input_seek(input, 0, G_SEEK_SET);
-    GsfInfile* zip = gsf_infile_zip_new(input, NULL);
-    if (zip) {
-        props_data_for_each_hwpx(zip, callback, user_data);
-        g_object_unref(zip);
-        return;
-    }
-
-    // try hwp v5
-    gsf_input_seek(input, 0, G_SEEK_SET);
-    GsfInfile* msole = gsf_infile_msole_new(input, NULL);
-    if (msole) {
-        props_data_for_each_hwp5(msole, callback, user_data);
-        g_object_unref(msole);
+    g_debug("mime_type: %s", mime_type);
+    if (strcmp(mime_type, "application/x-hwpx") == 0) {
+        gsf_input_seek(input, 0, G_SEEK_SET);
+        GsfInfile* zip = gsf_infile_zip_new(input, NULL);
+        if (zip) {
+            props_data_for_each_hwpx(zip, callback, user_data);
+            g_object_unref(zip);
+            return;
+        }
+    } else if (strcmp(mime_type, "application/x-hwp") == 0) {
+        gsf_input_seek(input, 0, G_SEEK_SET);
+        GsfInfile* msole = gsf_infile_msole_new(input, NULL);
+        if (msole) {
+            props_data_for_each_hwp5(msole, callback, user_data);
+            g_object_unref(msole);
+        }
     }
 }
-

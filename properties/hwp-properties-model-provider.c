@@ -59,7 +59,8 @@ get_models (NautilusPropertiesModelProvider *provider,
     file_info = NAUTILUS_FILE_INFO (files->data);
     mime_type = nautilus_file_info_get_mime_type (file_info);
 
-    if (strcmp (mime_type, "application/x-hwp") != 0)
+    if (strcmp (mime_type, "application/x-hwp") != 0 &&
+        strcmp (mime_type, "application/x-hwpx") != 0)
         return NULL;
     properties_group = hwp_properties_model_new (file_info);
 
