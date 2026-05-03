@@ -1,3 +1,13 @@
+0.3.0
+=====
+
+* properties: HWPX support
+* thumbnailer: HWPX support
+  - Use Preview/PrvImage.png but only if available.
+* Use meson for build
+* properties: Fix wrong property values
+* thubnailer: Fix image loading failures
+
 0.2.0
 =====
 

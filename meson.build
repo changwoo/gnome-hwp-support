@@ -1,5 +1,5 @@
 project('gnome-hwp-support', 'c',
-  version: '0.2.100',
+  version: '0.3.0',
 )
 
 localedir = join_paths(get_option('prefix'), get_option('datadir'), 'locale')
