@@ -1,0 +1,51 @@
+name: Source Release
+
+on:
+  push:
+    tags:
+      - '[0-9]*'
+
+jobs:
+  dist:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            gettext \
+            libglib2.0-dev \
+            libnautilus-extension-dev \
+            libgdk-pixbuf2.0-dev \
+            libgsf-1-dev \
+            meson \
+            ninja-build \
+            pkg-config
+
+      - name: Meson Setup
+        run: meson setup build
+
+      - name: Meson Dist
+        run: meson dist -C build --no-tests
+
+      - name: Get Version and Filename
+        id: get_dist
+        run: |
+          DIST_FILE=$(ls build/meson-dist/*.tar.xz | head -n 1)
+          echo "file_path=$DIST_FILE" >> $GITHUB_OUTPUT
+          echo "file_name=$(basename $DIST_FILE)" >> $GITHUB_OUTPUT
+
+      - name: Create Release and Upload Asset
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ steps.get_dist.outputs.file_path }}
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
