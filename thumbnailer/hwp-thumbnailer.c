@@ -23,20 +23,36 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
-#include <gsf/gsf-utils.h>
-#include <gsf/gsf-input-gio.h>
-#include <gsf/gsf-infile.h>
-#include <gsf/gsf-infile-msole.h>
+#include <gsf/gsf.h>
 
+
+enum {
+    FILE_TYPE_AUTO,
+    FILE_TYPE_HWP_V5,
+    FILE_TYPE_HWPX,
+};
+
+int file_type = FILE_TYPE_AUTO;
 int max_size = 256;
+
 
 int
 main(int argc, char *argv[])
 {
     int opt;
 
-    while ((opt = getopt(argc, argv, "s:")) != -1) {
+    while ((opt = getopt(argc, argv, "t:s:")) != -1) {
         switch (opt) {
+        case 't':
+            if (g_ascii_strcasecmp(optarg, "hwpx") == 0)
+                file_type = FILE_TYPE_HWPX;
+            else if (g_ascii_strcasecmp(optarg, "hwp") == 0)
+                file_type = FILE_TYPE_HWP_V5;
+            else {
+                fprintf(stderr, "Unknown file type: %s", optarg);
+                exit(1);
+            }
+            break;
         case 's':
             max_size = atoi(optarg);
             break;
@@ -61,26 +77,64 @@ main(int argc, char *argv[])
         fprintf(stderr, "Can't open input file (%s)\n", error->message);
         exit(1);
     }
-	
-    GsfInfile *infile = gsf_infile_msole_new(input, &error);
-    if (error) {
-        fprintf(stderr, "Can't read MSOLE data (%s)\n", error->message);
+
+    GsfInput *image_child = NULL;
+    GsfInfile *infile = NULL;
+
+    // check HWP V5
+    if (file_type == FILE_TYPE_AUTO || file_type == FILE_TYPE_HWP_V5) {
+        infile = gsf_infile_msole_new(input, &error);
+        if (error) {
+            if (file_type != FILE_TYPE_AUTO) {
+                fprintf(stderr, "Can't open input OLE file (%s)\n", error->message);
+                exit(1);
+            }
+            g_error_free(error);
+            error = NULL;
+        } else {
+            image_child = gsf_infile_child_by_name(infile, "PrvImage");
+            g_object_unref(infile);
+            if (!image_child) {
+                fprintf(stderr, "There is no PrvImage data\n");
+                exit(1);
+            }
+        }
+    }
+
+    // check HWPX
+    if (image_child == NULL && (file_type == FILE_TYPE_AUTO || file_type == FILE_TYPE_HWPX)) {
+        infile = gsf_infile_zip_new(input, &error);
+        if (error) {
+            if (file_type != FILE_TYPE_AUTO) {
+                fprintf(stderr, "Can't open input ZIP file (%s)\n", error->message);
+                exit(1);
+            }
+            g_error_free(error);
+            error = NULL;
+        } else {
+            g_object_unref(input);
+
+            image_child = gsf_infile_child_by_vname(infile, "Preview", "PrvImage.png", NULL);
+            g_object_unref(infile);
+            if (!image_child) {
+                fprintf(stderr, "There is no PrvImage data\n");
+                exit(1);
+            }
+        }
+    }
+
+    if (file_type == FILE_TYPE_AUTO && image_child == NULL) {
+        fprintf(stderr, "Can't read open input file\n");
         exit(1);
     }
-    g_object_unref(input);
-    GsfInput *child = gsf_infile_child_by_name(infile, "PrvImage");
-    g_object_unref(infile);
-    if (!child) {
-        fprintf(stderr, "There is no PrvImage data\n");
-        exit(1);
-    }
-    int size = gsf_input_size(child);
+
+    int size = gsf_input_size(image_child);
 
     unsigned char *buf;
     buf = g_malloc(size);
 
-    gsf_input_read(child, size, buf);
-    g_object_unref(child);
+    gsf_input_read(image_child, size, buf);
+    g_object_unref(image_child);
 
     GdkPixbufLoader *loader = gdk_pixbuf_loader_new();
     gdk_pixbuf_loader_write(loader, buf, size, &error);
@@ -89,13 +143,18 @@ main(int argc, char *argv[])
         fprintf(stderr, "Can't parse image data (%s)\n", error->message);
         exit(1);
     }
-    
+
+    gdk_pixbuf_loader_close(loader, &error);
+    if (error) {
+        fprintf(stderr, "Can't close pixbuf loader (%s)\n", error->message);
+        exit(1);
+    }
+
     GdkPixbuf *pixbuf = gdk_pixbuf_loader_get_pixbuf(loader);
     if (! pixbuf) {
         fprintf(stderr, "Can't parse image data: gdk_pixbuf_loader_get_pixbuf() failed\n");
         exit(1);
     }
-    gdk_pixbuf_loader_close(loader, NULL);
 
     int width = gdk_pixbuf_get_width(pixbuf);
     int height = gdk_pixbuf_get_height(pixbuf);
