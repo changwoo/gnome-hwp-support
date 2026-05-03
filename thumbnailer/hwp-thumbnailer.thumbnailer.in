@@ -1,4 +1,4 @@
 [Thumbnailer Entry]
-TryExec=hwp-thumbnailer
-Exec=hwp-thumbnailer -s %s %u %o
+TryExec=@LIBEXECDIR@/hwp-thumbnailer
+Exec=@LIBEXECDIR@/hwp-thumbnailer -s %s %u %o
 MimeType=application/x-hwp;application/vnd.haansoft-hwp;application/x-hwpx;application/hwp+zip;application/hwp+zip;application/vnd.hancom.hwpx

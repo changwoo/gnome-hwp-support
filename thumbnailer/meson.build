@@ -4,17 +4,24 @@ thumbnailer_deps = [
   dependency('libgsf-1'),
 ]
 
+libexecdir = join_paths(get_option('prefix'), get_option('libexecdir'))
+thumbnailer_dir = join_paths(get_option('datadir'), 'thumbnailers')
+
 hwp_thumbnailer = executable('hwp-thumbnailer',
   'hwp-thumbnailer.c',
   include_directories: config_inc,
   dependencies: thumbnailer_deps,
   install: true,
+  install_dir: get_option('libexecdir'),
 )
 
-datadir = get_option('datadir')
-thumbnailer_dir = join_paths(datadir, 'thumbnailers')
+conf_data = configuration_data()
+conf_data.set('LIBEXECDIR', libexecdir)
 
-install_data('hwp-thumbnailer.thumbnailer',
+configure_file(
+  input: 'hwp-thumbnailer.thumbnailer.in',
+  output: 'hwp-thumbnailer.thumbnailer',
+  configuration: conf_data,
+  install: true,
   install_dir: thumbnailer_dir
 )
-
